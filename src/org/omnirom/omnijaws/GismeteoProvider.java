@@ -193,6 +193,7 @@ public class GismeteoProvider extends AbstractWeatherProvider {
         boolean firstDay = true;
         float dayTempMin = 0;
         float dayTempMax = 0;
+        String date;
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -1);
@@ -202,7 +203,8 @@ public class GismeteoProvider extends AbstractWeatherProvider {
             while (result.size() < 5 && parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG
                         && parser.getName().equals("day")) {
-                    if (!firstDay && !parser.getAttributeValue(null, "date").equals(yesterday)) {
+                    date = parser.getAttributeValue(null, "date");
+                    if (!firstDay && !date.equals(yesterday)) {
 
                         if (metric) {
                             dayTempMin = Float.parseFloat(parser.getAttributeValue(null, "tmin"));
@@ -217,7 +219,7 @@ public class GismeteoProvider extends AbstractWeatherProvider {
                                 /* high */ dayTempMax,
                                 /* condition */ parser.getAttributeValue(null, "descr"),
                                 /* conditionCode */ mapIconToCode(parser.getAttributeValue(null, "icon")),
-                                /* date */ parser.getAttributeValue(null, "date"),
+                                /* date */ date,
                                 metric);
                         result.add(item);
                     } else {
