@@ -101,6 +101,7 @@ public class METNorwayProvider extends AbstractWeatherProvider {
     private WeatherInfo getAllWeather(String coordinates, boolean metric) {
         String url = URL_WEATHER + coordinates;
         String response = retrieve(url);
+        String city = null;
         if (response == null) {
             return null;
         }
@@ -117,8 +118,12 @@ public class METNorwayProvider extends AbstractWeatherProvider {
             if(symbolCode.contains("_night") && (weatherCode == 30 || weatherCode == 32 || weatherCode == 34)) {
                 weatherCode -= 1;
             }
+            if (Config.isCustomLocation(mContext))
+                city = Config.getLocationName(mContext);
 
-            String city = getNameLocality(coordinates);
+            if (TextUtils.isEmpty(city))
+                city = getNameLocality(coordinates);
+
             if (TextUtils.isEmpty(city)) {
                 city = mContext.getResources().getString(R.string.omnijaws_city_unknown);
             }
