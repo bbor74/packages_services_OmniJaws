@@ -87,6 +87,7 @@ public class PirateWeatherProvider extends AbstractWeatherProvider {
         String units = metric ? "ca" : "us";
         String url = String.format(URL_WEATHER + coordinates + PART_PARAMETERS, getAPIKey(), units, getLanguage());
         String response = retrieve(url);
+        String city = null;
         if (response == null) {
             return null;
         }
@@ -96,8 +97,12 @@ public class PirateWeatherProvider extends AbstractWeatherProvider {
             JSONObject weather = new JSONObject(response);
             JSONObject conditions = weather.optJSONObject("currently");
             ArrayList<DayForecast> forecasts = parseForecasts(weather.getJSONObject("daily").getJSONArray("data"), metric);
+            if (Config.isCustomLocation(mContext))
+                city = Config.getLocationName(mContext);
 
-            String city = getNamePlace(coordinates);
+            if (TextUtils.isEmpty(city))
+                city = getNamePlace(coordinates);
+
             if (TextUtils.isEmpty(city)) {
                 city = mContext.getResources().getString(R.string.omnijaws_city_unknown);
             }
