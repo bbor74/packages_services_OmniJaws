@@ -190,7 +190,7 @@ public class GismeteoProvider extends AbstractWeatherProvider {
 
     private ArrayList<DayForecast> parseDayForecast(XmlPullParser parser, boolean metric) {
         ArrayList<DayForecast> result = new ArrayList<>();
-        boolean firstDay = true;
+        boolean firstDay = false;
         float dayTempMin = 0;
         float dayTempMax = 0;
         String date;
