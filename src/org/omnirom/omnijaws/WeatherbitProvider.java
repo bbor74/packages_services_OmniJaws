@@ -5,6 +5,7 @@ package org.omnirom.omnijaws;
 import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -79,7 +80,7 @@ public class WeatherbitProvider extends AbstractWeatherProvider {
     private WeatherInfo getAllWeather(String coordinates, boolean metric) {
         String units = metric ? "M" : "I";
         String lang = Locale.getDefault().getLanguage();
-
+        String city = null;
         String currentUrl = String.format(URL_CURRENT, units, lang, getAPIKey()) + coordinates;
         String currentResponse = retrieve(currentUrl);
         if (currentResponse == null) {
@@ -105,10 +106,15 @@ public class WeatherbitProvider extends AbstractWeatherProvider {
             if(weatherIcon.endsWith("n") && (weatherCode == 28 || weatherCode == 30 || weatherCode == 32 || weatherCode == 34)) {
                 weatherCode -= 1;
             }
+            if (Config.isCustomLocation(mContext))
+                city = Config.getLocationName(mContext);
+
+            if (TextUtils.isEmpty(city))
+                city = current.getString("city_name");
 
             WeatherInfo w = new WeatherInfo(mContext,
                     /* id */ coordinates,
-                    /* city */ current.getString("city_name"),
+                    /* city */ city,
                     /* condition */ weather.optString("description"),
                     /* conditionCode */ weatherCode,
                     /* temperature */ current.getInt("temp"),
