@@ -261,7 +261,7 @@ public class WeatherAppWidgetProvider extends AppWidgetProvider {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         widget.setTextViewText(R.id.current_weather_timestamp, sdf.format(timeStamp));
 
-        sdf = new SimpleDateFormat("EE");
+        sdf = new SimpleDateFormat("EE, d");
         Calendar cal = Calendar.getInstance();
         String dayShort = sdf.format(new Date(cal.getTimeInMillis()));
 
