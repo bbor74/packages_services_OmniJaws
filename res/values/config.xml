@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-	<string name="owm_api_key" translatable="false" >312ef3f30504e37b9d78e9affff306af</string>
+	<string name="owm_api_key" translatable="false" >2eaba923f653cc4b4b1b1b5849349db6</string>
 	<string name="accu_api_key" translatable="false" >466a4a95e2a9483e8f3fc22d9bb2395f</string>
 	<string name="pirateweather_api_key" translatable="false" >Oh1fyStMn1CwXtvN</string>
 	<string name="twc_api_key" translatable="false" >8de2d8b3a93542c9a2d8b3a935a2c909</string>
