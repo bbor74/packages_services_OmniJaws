@@ -56,4 +56,5 @@
   <string name="show_background_title">Tieň v pozadí</string>
   <string name="weather_config_title">Nastavenia služby</string>
   <string name="with_forecast_title">So 4-dňovou predpoveďou a detailami</string>
+  <string name="owm_key">Vlastný kľúč OWM</string>
 </resources>

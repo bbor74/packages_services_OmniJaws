@@ -56,4 +56,5 @@
   <string name="show_background_title">Arxaplan kölgəsi</string>
   <string name="weather_config_title">Servis parametrləri</string>
   <string name="with_forecast_title">4 günlük hava təxmini və təfsilatları</string>
+  <string name="owm_key">Özəl OWM açarı</string>
 </resources>
