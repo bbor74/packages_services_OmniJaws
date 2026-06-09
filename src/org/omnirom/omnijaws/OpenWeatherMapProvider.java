@@ -42,10 +42,14 @@ import java.util.Map;
 public class OpenWeatherMapProvider extends AbstractWeatherProvider {
     private static final String TAG = "OpenWeatherMapProvider";
 
-    private static final int FORECAST_DAYS = 5;
+    private static final int FORECAST_COUNT = 40;
     private static final String PART_COORDINATES = "lat=%f&lon=%f";
+
     private static final String URL_WEATHER =
-            "https://api.openweathermap.org/data/2.5/onecall?%s&mode=json&units=%s&lang=%s&cnt=" + FORECAST_DAYS + "&exclude=minutely,hourly,alerts&appid=%s";
+            "https://api.openweathermap.org/data/2.5/weather?%s&mode=json&units=%s&lang=%s&appid=%s";
+    private static final String URL_FORECAST =
+            "https://api.openweathermap.org/data/2.5/forecast?%s&mode=json&units=%s&lang=%s&cnt=" + FORECAST_COUNT + "&appid=%s";
+
     private static final String URL_PLACES =
             "http://api.geonames.org/searchJSON?q=%s&lang=%s&username=omnijaws&maxRows=20";
     private static final String URL_LOCALITY =
@@ -123,13 +127,23 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
         }
         log(TAG, "Condition URL = " + conditionUrl + " returning a response of " + conditionResponse);
 
+        mRequestNumber++;
+        String forecastUrl = String.format(Locale.US, URL_FORECAST, selection, units, locale, getAPIKey());
+        String forecastResponse = retrieve(forecastUrl);
+        if (forecastResponse == null) {
+            return null;
+        }
+        log(TAG, "Forcast URL = " + forecastUrl + " returning a response of " + forecastResponse);
+
         try {
             JSONObject conditions = new JSONObject(conditionResponse);
-            JSONObject conditionData = conditions.getJSONObject("current");
-            JSONObject weather = conditionData.getJSONArray("weather").getJSONObject(0);
+            JSONObject weather = conditions.getJSONArray("weather").getJSONObject(0);
+            JSONObject conditionData = conditions.getJSONObject("main");
+            JSONObject windData = conditions.getJSONObject("wind");
             ArrayList<DayForecast> forecasts =
-                    parseForecasts(conditions.getJSONArray("daily"), metric);
-            float windSpeed = (float) conditionData.getDouble("wind_speed");
+                    parseForecasts(new JSONObject(forecastResponse).getJSONArray("list"), metric);
+            // String localizedCityName = conditions.getString("name");
+            float windSpeed = (float) windData.getDouble("speed");
             if (metric) {
                 // speeds are in m/s so convert to our common metric unit km/h
                 windSpeed *= 3.6f;
@@ -143,7 +157,7 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
                     /* temperature */ sanitizeTemperature(conditionData.getDouble("temp"), metric),
                     /* humidity */ (float) conditionData.getDouble("humidity"),
                     /* wind */ windSpeed,
-                    /* windDir */ conditionData.has("WIND_deg") ? conditionData.getInt("wind_deg") : 0,
+                    /* windDir */ windData.has("deg") ? windData.getInt("deg") : 0,
                     metric,
                     forecasts,
                     System.currentTimeMillis());
@@ -160,36 +174,87 @@ public class OpenWeatherMapProvider extends AbstractWeatherProvider {
 
     private ArrayList<DayForecast> parseForecasts(JSONArray forecasts, boolean metric) throws JSONException {
         ArrayList<DayForecast> result = new ArrayList<>();
+        int day_count = 0;
+        boolean day_start = true;
+        double temp_min = 0, temp_max = 0;
+        double temp_min_cur, temp_max_cur;
+        String condition = "", condition_cur;
+        int id = 0, id_cur;
+        String dt_txt, dt_time;
+
         int count = forecasts.length();
 
         if (count == 0) {
             throw new JSONException("Empty forecasts array");
         }
         for (int i = 0; i < count; i++) {
-            String day = getDay(i);
-            DayForecast item = null;
+
             try {
                 JSONObject forecast = forecasts.getJSONObject(i);
-                JSONObject conditionData = forecast.getJSONObject("temp");
+                JSONObject conditionData = forecast.getJSONObject("main");
                 JSONObject data = forecast.getJSONArray("weather").getJSONObject(0);
-                item = new DayForecast(
-                        /* low */ sanitizeTemperature(conditionData.getDouble("min"), metric),
-                        /* high */ sanitizeTemperature(conditionData.getDouble("max"), metric),
-                        /* condition */ data.getString("main"),
-                        /* conditionCode */ mapConditionIconToCode(data.getInt("id")),
-                        day,
-                        metric);
+                temp_min_cur = conditionData.getDouble("temp_min");
+                temp_max_cur = conditionData.getDouble("temp_max");
+                condition_cur = data.getString("main");
+                id_cur = data.getInt("id");
+                dt_txt = forecast.getString("dt_txt");
+                dt_time = dt_txt.substring(dt_txt.length() - 8);
+              //  Log.w(TAG, " dt_txt: " + dt_txt + " dt_time: " + dt_time);
+//                item = new DayForecast(
+//                        /* low */ sanitizeTemperature(conditionData.getDouble("temp_min"), metric),
+//                        /* high */ sanitizeTemperature(conditionData.getDouble("temp_max"), metric),
+//                        /* condition */ data.getString("main"),
+//                        /* conditionCode */ mapConditionIconToCode(data.getInt("id")),
+//                        day,
+//                        metric);
+
             } catch (JSONException e) {
                 Log.w(TAG, "Invalid forecast for day " + i + " creating dummy", e);
-                item = new DayForecast(
-                        /* low */ 0,
-                        /* high */ 0,
-                        /* condition */ "",
-                        /* conditionCode */ -1,
-                        "NaN",
-                        metric);
+                temp_min_cur = 0;
+                temp_max_cur = 0;
+                condition_cur = "";
+                id_cur = 0;
+                dt_time = "21:00:00";
+//                item = new DayForecast(
+//                        /* low */ 0,
+//                        /* high */ 0,
+//                        /* condition */ "",
+//                        /* conditionCode */ -1,
+//                        "NaN",
+//                        metric);
             }
-            result.add(item);
+
+            if (day_start) {
+                temp_min = temp_min_cur;
+                temp_max = temp_max_cur;
+                condition = condition_cur;
+                id = id_cur;
+                day_start = false;
+            } else {
+                if (temp_min_cur < temp_min) temp_min = temp_min_cur;
+                if (temp_max_cur > temp_max) temp_max = temp_max_cur;
+            }
+            if (dt_time.equals("12:00:00")) {
+                condition = condition_cur;
+                id = id_cur;
+            }
+            if (dt_time.equals("21:00:00")) {
+                String day = getDay(day_count);
+                DayForecast item = null;
+
+                item = new DayForecast(
+                        /* low */ sanitizeTemperature(temp_min, metric),
+                        /* high */ sanitizeTemperature(temp_max, metric),
+                        /* condition */ condition,
+                        /* conditionCode */ mapConditionIconToCode(id),
+                        day,
+                        metric);
+
+                result.add(item);
+                day_count++;
+                day_start = true;
+                if (day_count == 5) break;
+            }
         }
         // clients assume there are 5  entries - so fill with dummy if needed
         if (result.size() < 5) {
