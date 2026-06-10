@@ -58,4 +58,5 @@
   <string name="with_forecast_title">С прогнозом на 4 дня и деталями</string>
   <string name="omnijaws_city_unknown">Неизвестно</string>
   <string name="owm_key">Пользовательский ключ OWM</string>
+  <string name="yandex_key">Ключ API Яндекса</string>
 </resources>

@@ -55,4 +55,5 @@
   <string name="omnijaws_current_text">Ahora</string>
   <string name="show_background_title">Sombra de fondo</string>
   <string name="weather_config_title">Ajustes del servicio</string>
+  <string name="yandex_key">Clave de API de Yandex</string>
 </resources>

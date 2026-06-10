@@ -58,4 +58,5 @@
   <string name="with_forecast_title">4日間の天気予報と詳細</string>
   <string name="omnijaws_city_unknown">不明</string>
   <string name="owm_key">カスタム OWM キー</string>
+  <string name="yandex_key">Yandex API キー</string>
 </resources>

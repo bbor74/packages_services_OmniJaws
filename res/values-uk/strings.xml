@@ -57,4 +57,5 @@
   <string name="weather_config_title">Параметри служби</string>
   <string name="with_forecast_title">З прогнозом на 4 дні і деталями</string>
   <string name="omnijaws_city_unknown">Невідомо</string>
+  <string name="yandex_key">API ключ Яндекса</string>
 </resources>

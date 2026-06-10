@@ -56,4 +56,5 @@
   <string name="show_background_title">Umbră fundal</string>
   <string name="weather_config_title">Setări serviciu</string>
   <string name="with_forecast_title">Cu 4 zile de prognoză și detalii</string>
+  <string name="yandex_key">Cheie API Yandex</string>
 </resources>

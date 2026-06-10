@@ -56,4 +56,5 @@
   <string name="show_background_title">Háttér árnyéka</string>
   <string name="weather_config_title">Szolgáltatás beállítások</string>
   <string name="with_forecast_title">4 napos előrejelzéssel és részletekkel</string>
+  <string name="yandex_key">Yandex API-kulcs</string>
 </resources>
