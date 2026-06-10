@@ -281,9 +281,32 @@ public class YandexWeatherProvider extends AbstractWeatherProvider {
         }
     }
 
+    private String getAPIKey() {
+        String customKey = Config.getYandexKey(mContext);
+        if (!TextUtils.isEmpty(customKey)) {
+            return customKey;
+        }
+/*        if (mKeys.size() > 0) {
+            int key = mRequestNumber % mKeys.size();
+            log(TAG, "use API key = " + key);
+            return mKeys.get(key);
+        }
+        try {
+            return mContext.getResources().getString(R.string.yandex_api_key);
+        } catch (Resources.NotFoundException e) {
+        }
+*/
+        return null;
+    }
+
+
     private String getRawWeather(String url) {
         HttpGet request = new HttpGet(url);
+        String apiKey = getAPIKey();
         // request.setHeader("X-Yandex-API-Key", "your api key");
+        request.setHeader("X-Yandex-Weather-Key", apiKey);
+        log(TAG, " " +request.getFirstHeader("X-Yandex-Weather-Key"));
+
         try {
             HttpResponse response = new DefaultHttpClient().execute(request);
             int code = response.getStatusLine().getStatusCode();

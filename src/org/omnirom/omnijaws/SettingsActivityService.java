@@ -69,6 +69,7 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
     private Handler mHandler = new Handler();
     protected boolean mShowIconPack;
     private EditTextPreference mOwmKey;
+    private EditTextPreference mYandexKey;
 
     private static final String PREF_KEY_CUSTOM_LOCATION_CITY = "weather_custom_location_city";
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
@@ -159,6 +160,13 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
         mOwmKey.setSummary(TextUtils.isEmpty(customKey) ?
                 getResources().getString(R.string.service_disabled) : customKey);
         mOwmKey.setOnPreferenceChangeListener(this);
+
+        mYandexKey = (EditTextPreference) findPreference(Config.PREF_KEY_YANDEX_KEY);
+        final String customYandexKey = Config.getYandexKey(this);
+        mYandexKey.setSummary(TextUtils.isEmpty(customYandexKey) ?
+                getResources().getString(R.string.service_disabled) : customYandexKey);
+        mYandexKey.setOnPreferenceChangeListener(this);
+
     }
 
     @Override
@@ -251,6 +259,12 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
         } else if (preference == mOwmKey) {
             String value = (String) newValue;
             mOwmKey.setSummary(TextUtils.isEmpty(value) ?
+                    getResources().getString(R.string.service_disabled) : value);
+            WeatherService.startUpdate(this);
+            return true;
+        } else if (preference == mYandexKey) {
+            String value = (String) newValue;
+            mYandexKey.setSummary(TextUtils.isEmpty(value) ?
                     getResources().getString(R.string.service_disabled) : value);
             WeatherService.startUpdate(this);
             return true;
