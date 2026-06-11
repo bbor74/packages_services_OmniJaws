@@ -38,6 +38,7 @@ public class Config {
     public static final String PREF_KEY_UPDATE_ERROR = "update_error";
     public static final String PREF_KEY_OWM_KEY = "owm_key";
     public static final String PREF_KEY_YANDEX_KEY = "yandex_key";
+    public static final String PREF_KEY_WEATHERBIT_KEY = "weatherbit_key";
 
     public static AbstractWeatherProvider getProvider(Context context) {
         SharedPreferences prefs = PreferenceManager
@@ -269,4 +270,10 @@ public class Config {
         return prefs.getString(PREF_KEY_YANDEX_KEY, null);
     }
 
+    public static String getWeatherbitKey(Context context) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        return prefs.getString(PREF_KEY_WEATHERBIT_KEY, null);
+    }
 }

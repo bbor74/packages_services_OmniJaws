@@ -55,4 +55,5 @@
     <string name="omnijaws_city_unknown">Unknown</string>
     <string name="owm_key">Custom OWM key</string>
     <string name="yandex_key">Yandex API Key</string>
+    <string name="weatherbit_key">Weatherbit API key</string>
 </resources>

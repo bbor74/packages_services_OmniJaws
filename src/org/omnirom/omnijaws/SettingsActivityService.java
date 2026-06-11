@@ -70,6 +70,7 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
     protected boolean mShowIconPack;
     private EditTextPreference mOwmKey;
     private EditTextPreference mYandexKey;
+    private EditTextPreference mWeatherbitKey;
 
     private static final String PREF_KEY_CUSTOM_LOCATION_CITY = "weather_custom_location_city";
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
@@ -166,6 +167,12 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
         mYandexKey.setSummary(TextUtils.isEmpty(customYandexKey) ?
                 getResources().getString(R.string.service_disabled) : customYandexKey);
         mYandexKey.setOnPreferenceChangeListener(this);
+
+        mWeatherbitKey = (EditTextPreference) findPreference(Config.PREF_KEY_WEATHERBIT_KEY);
+        final String customWeatherbitKey = Config.getWeatherbitKey(this);
+        mWeatherbitKey.setSummary(TextUtils.isEmpty(customWeatherbitKey) ?
+                getResources().getString(R.string.service_disabled) : customWeatherbitKey);
+        mWeatherbitKey.setOnPreferenceChangeListener(this);
 
     }
 
@@ -265,6 +272,12 @@ public class SettingsActivityService extends PreferenceActivity implements OnPre
         } else if (preference == mYandexKey) {
             String value = (String) newValue;
             mYandexKey.setSummary(TextUtils.isEmpty(value) ?
+                    getResources().getString(R.string.service_disabled) : value);
+            WeatherService.startUpdate(this);
+            return true;
+        } else if (preference == mWeatherbitKey) {
+            String value = (String) newValue;
+            mWeatherbitKey.setSummary(TextUtils.isEmpty(value) ?
                     getResources().getString(R.string.service_disabled) : value);
             WeatherService.startUpdate(this);
             return true;

@@ -77,4 +77,12 @@
         android:inputType="textNoSuggestions"
         android:persistent="true" />
 
+    <EditTextPreference
+        android:title="@string/weatherbit_key"
+        android:dialogTitle="@string/weatherbit_key"
+        android:key="weatherbit_key"
+        android:singleLine="true"
+        android:inputType="textNoSuggestions"
+        android:persistent="true" />
+
 </PreferenceScreen>

@@ -247,6 +247,10 @@ public class WeatherbitProvider extends AbstractWeatherProvider {
     }
 
     private String getAPIKey() {
+        String customKey = Config.getWeatherbitKey(mContext);
+        if (!TextUtils.isEmpty(customKey)) {
+            return customKey;
+        }
         return mContext.getResources().getString(R.string.wbit_api_key);
     }
 
