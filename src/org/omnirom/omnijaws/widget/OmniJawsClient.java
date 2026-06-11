@@ -250,12 +250,22 @@ public class OmniJawsClient {
             Log.w(TAG, "Requesting condition image while disabled");
             return null;
         }
-        try {
-            int resId = mRes.getIdentifier(mIconPrefix + "_" + conditionCode, "drawable", mPackageName);
-            return mRes.getDrawable(resId);
-        } catch(Exception e) {
-            Log.w(TAG, "Failed to get condition image for " + conditionCode);
-            return null;
+        if (conditionCode < 0) {
+            try {
+                int resId = mRes.getIdentifier(mIconPrefix + "_na", "drawable", mPackageName);
+                return mRes.getDrawable(resId);
+            } catch(Exception e) {
+                Log.w(TAG, "Failed to get 'na' image for " + conditionCode);
+                return null;
+            }
+        } else {
+            try {
+                int resId = mRes.getIdentifier(mIconPrefix + "_" + conditionCode, "drawable", mPackageName);
+                return mRes.getDrawable(resId);
+            } catch(Exception e) {
+                Log.w(TAG, "Failed to get condition image for " + conditionCode);
+                return null;
+            }
         }
     }
 
