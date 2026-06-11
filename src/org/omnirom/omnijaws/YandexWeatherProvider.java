@@ -4,6 +4,8 @@
 package org.omnirom.omnijaws;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -93,6 +95,7 @@ public class YandexWeatherProvider extends AbstractWeatherProvider {
     private WeatherInfo getAllWeather(String coordinates, boolean metric) {
         String url = String.format(URL_WEATHER + coordinates + PART_PARAMETERS, getLanguage());
         String response = getRawWeather(url);
+        String city = null;
         if (response == null) {
             return null;
         }
@@ -102,7 +105,13 @@ public class YandexWeatherProvider extends AbstractWeatherProvider {
             JSONObject weather = new JSONObject(response);
             JSONObject current = weather.getJSONObject("fact");
 
-            String city = weather.optJSONObject("geo_object").optJSONObject("locality").optString("name");
+//            String city = weather.optJSONObject("geo_object").optJSONObject("locality").optString("name");
+            if (Config.isCustomLocation(mContext))
+                city = Config.getLocationName(mContext);
+
+            if (TextUtils.isEmpty(city))
+                city = getNameLocality(coordinates);
+
             if (TextUtils.isEmpty(city)) {
                 city = mContext.getResources().getString(R.string.omnijaws_city_unknown);
             }
@@ -247,6 +256,21 @@ public class YandexWeatherProvider extends AbstractWeatherProvider {
             }
         }
         return result;
+    }
+
+    private String getNameLocality(String coordinate) {
+        double latitude = Double.valueOf(coordinate.substring(4, coordinate.indexOf("&")));
+        double longitude = Double.valueOf(coordinate.substring(coordinate.indexOf("lon=") + 4));
+        Geocoder geocoder = new Geocoder(mContext.getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(listAddresses != null && listAddresses.size() > 0){
+                return listAddresses.get(0).getLocality();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static float convertTemperature(int value, boolean metric) {
